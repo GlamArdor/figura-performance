@@ -1,0 +1,10 @@
+# gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# development client
+run/
+
+# Figura is not ours to redistribute: fetch it yourself, see the README
+libs/

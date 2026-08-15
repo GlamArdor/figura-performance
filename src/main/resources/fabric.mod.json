@@ -1,0 +1,42 @@
+{
+	"schemaVersion": 1,
+	"id": "figuraperf",
+	"version": "${version}",
+	"name": "Figura Performance",
+	"description": "Puts a budget on what Figura does. Figura ticks the scripts of every loaded avatar, applies every animation and rebuilds every model tree on every single frame, no matter how far away that player is or whether they are on screen at all – which is why a crowd of avatars costs so much. This mod decides how much each avatar is worth: distant ones keep their model but lose their scripts, the far ones drop out entirely, and an adaptive mode holds a frame rate target on its own. Comes with an overlay that names the avatars eating your frame.",
+	"authors": [
+		"Glam_Ardor"
+	],
+	"contact": {
+		"sources": "https://codeberg.org/Glam_Ardor/figura-performance",
+		"issues": "https://codeberg.org/Glam_Ardor/figura-performance/issues"
+	},
+	"license": "LGPL-3.0-or-later",
+	"icon": "assets/figuraperf/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"com.glamardor.figuraperf.FiguraPerf"
+		],
+		"modmenu": [
+			"com.glamardor.figuraperf.compat.FiguraPerfModMenu"
+		]
+	},
+	"mixins": [
+		{
+			"config": "figuraperf.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": ">=1.21.8 <1.21.9",
+		"java": ">=21",
+		"fabric-api": "*",
+		"figura": "*"
+	},
+	"suggests": {
+		"modmenu": "*",
+		"cloth-config": "*"
+	}
+}

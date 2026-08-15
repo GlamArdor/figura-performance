@@ -1,0 +1,71 @@
+plugins {
+	id 'fabric-loom' version "${loom_version}"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+	archivesName = project.archives_base_name
+}
+
+repositories {
+	maven {
+		name = 'Terraformers'
+		url = 'https://maven.terraformersmc.com/releases'
+	}
+	maven {
+		name = 'Shedaniel'
+		url = 'https://maven.shedaniel.me/'
+	}
+}
+
+// The mixins target Figura's own classes, so its jar has to be there to compile against.
+def figuraJar = file(project.figura_jar)
+if (!figuraJar.exists()) {
+	throw new GradleException("Figura not found at ${project.figura_jar}.\n" +
+			"Download the Fabric build of Figura for ${project.minecraft_version} and put the jar there, " +
+			"then set figura_jar in gradle.properties to its name. See the README.")
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// Figura is never shipped with this mod – it is here so the mixins have something to compile
+	// against, and so a development client can be launched with it to check they still apply.
+	// Not fetched from a maven on purpose: Modrinth carries Figura only up to 1.21.4, and the
+	// 1.21.8 build comes from their own releases. See the README.
+	modCompileOnly files(project.figura_jar)
+	modLocalRuntime files(project.figura_jar)
+	// A development client does not unpack Figura's nested jars, so hand it the libraries it needs.
+	localRuntime fileTree(dir: 'libs/nested', include: '*.jar')
+
+	modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+	modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
+		exclude(group: "net.fabricmc.fabric-api")
+	}
+	modLocalRuntime("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
+		exclude(group: "net.fabricmc.fabric-api")
+	}
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 21
+}
+
+java {
+	withSourcesJar()
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
