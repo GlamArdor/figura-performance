@@ -1,7 +1,6 @@
 package com.glamardor.figuraperf.gui;
 
 import com.glamardor.figuraperf.config.PerfConfig;
-import com.glamardor.figuraperf.config.Profile;
 import com.glamardor.figuraperf.core.CostMeter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -92,12 +91,8 @@ public class FallbackConfigScreen extends Screen {
 		category("general",
 				toggle("enabled", () -> config.enabled, value -> config.enabled = value),
 				toggle("always_full_self", () -> config.alwaysFullSelf, value -> config.alwaysFullSelf = value),
-				cycle("profile", () -> config.profile.getDisplayName(), () -> config.profile = config.profile.next()),
-				intSlider("crowd_players", config.crowdPlayers, 2, 40, value -> config.crowdPlayers = value),
-				blocksSlider("crowd_radius", config.crowdRadius, 8, 128, value -> config.crowdRadius = value));
-
-		profileCategory("solo", config.solo);
-		profileCategory("crowd", config.crowd);
+				blocksSlider("distance", config.distance, 4, 256, value -> config.distance = value),
+				intSlider("max_avatars", config.maxAvatars, 0, 64, value -> config.maxAvatars = value));
 
 		category("frames",
 				toggle("skip_offscreen", () -> config.skipOffscreen, value -> config.skipOffscreen = value),
@@ -129,20 +124,6 @@ public class FallbackConfigScreen extends Screen {
 				toggle("overlay", () -> config.overlay, value -> config.overlay = value),
 				intSlider("overlay_rows", config.overlayRows, 1, 20, value -> config.overlayRows = value),
 				intSlider("overlay_offset", config.overlayOffsetY, 0, 200, value -> config.overlayOffsetY = value));
-	}
-
-	private void profileCategory(String name, Profile profile) {
-		category(name,
-				blocksSlider("full_distance", profile.fullDistance, 4, 128, value -> profile.fullDistance = value),
-				blocksSlider("model_distance", profile.modelDistance, 8, 256, value -> profile.modelDistance = value),
-				intSlider("max_full", profile.maxFullAvatars, 0, 48, value -> profile.maxFullAvatars = value),
-				intSlider("max_model", profile.maxModelAvatars, 0, 64, value -> profile.maxModelAvatars = value),
-				intSlider("animation_interval", profile.animationInterval, 1, 10,
-						value -> profile.animationInterval = value),
-				intSlider("script_interval", profile.scriptTickInterval, 1, 10,
-						value -> profile.scriptTickInterval = value),
-				toggle("complexity_lod", () -> profile.complexityLod, value -> profile.complexityLod = value),
-				percentSlider("complexity_floor", profile.complexityFloor, value -> profile.complexityFloor = value));
 	}
 
 	/** Adds a header and its rows, unless the search has filtered everything under it away. */

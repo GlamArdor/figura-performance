@@ -2,7 +2,6 @@ package com.glamardor.figuraperf.gui;
 
 import com.glamardor.figuraperf.FiguraPerf;
 import com.glamardor.figuraperf.config.PerfConfig;
-import com.glamardor.figuraperf.config.Profile;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import org.jetbrains.annotations.Nullable;
@@ -112,15 +111,10 @@ public final class LivePreview {
 			try {
 				Object value = field.get(from);
 
-				// Lists and profiles are objects: copy them rather than sharing one instance, or the
-				// snapshot would follow every edit and have nothing left to revert to.
-				if (value instanceof List<?> list) {
+				// The lists are the player's own text: copy them rather than sharing one instance, or
+				// the snapshot would follow every edit and have nothing left to revert to.
+				if (value instanceof List<?> list)
 					value = new ArrayList<>(list);
-				} else if (value instanceof Profile source) {
-					Profile copy = new Profile();
-					copy.copyFrom(source);
-					value = copy;
-				}
 
 				field.set(to, value);
 			} catch (IllegalAccessException error) {

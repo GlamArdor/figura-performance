@@ -1,7 +1,6 @@
 package com.glamardor.figuraperf.config;
 
 import com.glamardor.figuraperf.FiguraPerf;
-import com.glamardor.figuraperf.core.AvatarBudget;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
@@ -31,17 +30,19 @@ public class PerfConfig {
 	/** The player's own avatar is never cut down – it is the one avatar they always want to see. */
 	public boolean alwaysFullSelf = true;
 
-	// -- profiles --
+	// -- limits --
 
-	public ProfileChoice profile = ProfileChoice.AUTO;
-	/** How many players have to be around before the crowd profile takes over. */
-	public int crowdPlayers = 6;
-	public float crowdRadius = 32f;
+	/** Past this distance an avatar is not shown and the player falls back to their skin. */
+	public float distance = 64f;
+	/**
+	 * At most this many of the nearest avatars are shown.
+	 *
+	 * <p>One number is enough for both a duo and a crowd: with two people around, a limit of ten
+	 * hides nobody, and it only starts cutting once there is actually something to cut.
+	 */
+	public int maxAvatars = 12;
 
-	public Profile solo = Profile.solo();
-	public Profile crowd = Profile.crowd();
-
-	// -- per frame work, shared by both profiles --
+	// -- per frame work --
 
 	/** Avatars outside the view are still ticked and animated by Figura; this stops that. */
 	public boolean skipOffscreen = true;
@@ -88,15 +89,6 @@ public class PerfConfig {
 		return instance;
 	}
 
-	/** The limits in force right now, once the profile has been picked. */
-	public Profile activeProfile() {
-		return switch (profile) {
-			case SOLO -> solo;
-			case CROWD -> crowd;
-			case AUTO -> AvatarBudget.crowded() ? crowd : solo;
-		};
-	}
-
 	private static Path path() {
 		return FabricLoader.getInstance().getConfigDir().resolve("figura-performance.json");
 	}
@@ -123,12 +115,14 @@ public class PerfConfig {
 			blocked = new ArrayList<>();
 		if (whitelist == null)
 			whitelist = new ArrayList<>();
-		if (profile == null)
-			profile = ProfileChoice.AUTO;
-		if (solo == null)
-			solo = Profile.solo();
-		if (crowd == null)
-			crowd = Profile.crowd();
+		// A config written before the profiles were dropped has neither of these fields, so Gson
+		// leaves them at zero – which would read as "hide everyone". Treat that as "this file
+		// predates the change" and start from the defaults.
+		PerfConfig defaults = new PerfConfig();
+		if (distance <= 0f)
+			distance = defaults.distance;
+		if (maxAvatars <= 0)
+			maxAvatars = defaults.maxAvatars;
 	}
 
 	public void save() {
@@ -149,11 +143,8 @@ public class PerfConfig {
 		enabled = defaults.enabled;
 		alwaysFullSelf = defaults.alwaysFullSelf;
 
-		profile = defaults.profile;
-		crowdPlayers = defaults.crowdPlayers;
-		crowdRadius = defaults.crowdRadius;
-		solo.copyFrom(defaults.solo);
-		crowd.copyFrom(defaults.crowd);
+		distance = defaults.distance;
+		maxAvatars = defaults.maxAvatars;
 
 		skipOffscreen = defaults.skipOffscreen;
 		textureUploadsPerFrame = defaults.textureUploadsPerFrame;

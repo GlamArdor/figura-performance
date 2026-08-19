@@ -3,7 +3,7 @@
 	"id": "figuraperf",
 	"version": "${version}",
 	"name": "Figura Performance",
-	"description": "Puts a budget on what Figura does. Figura ticks the scripts of every loaded avatar, applies every animation and rebuilds every model tree on every single frame, no matter how far away that player is or whether they are on screen at all – which is why a crowd of avatars costs so much. This mod decides how much each avatar is worth: distant ones keep their model but lose their scripts, the far ones drop out entirely, and an adaptive mode holds a frame rate target on its own. Comes with an overlay that names the avatars eating your frame.",
+	"description": "Decides how many Figura avatars are worth showing at once. Figura draws every avatar around you in full, however far away that player is and whether or not they are on screen, and the cost is not only the model: for each of them it also edits the vanilla player model, walks its own layers and draws a custom nameplate. This mod hides the ones you are not looking at, the ones past a distance and the ones over a limit, so a crowd stops eating your frame rate. Hidden avatars cost nothing at all, the same as Figura's panic button, only per player instead of all at once. Comes with an overlay naming the avatars that cost the most, in milliseconds and frames.",
 	"authors": [
 		"Glam_Ardor"
 	],

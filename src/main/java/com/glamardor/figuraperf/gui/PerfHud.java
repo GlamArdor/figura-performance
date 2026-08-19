@@ -1,10 +1,8 @@
 package com.glamardor.figuraperf.gui;
 
 import com.glamardor.figuraperf.config.PerfConfig;
-import com.glamardor.figuraperf.config.ProfileChoice;
 import com.glamardor.figuraperf.core.AvatarBudget;
 import com.glamardor.figuraperf.core.CostMeter;
-import com.glamardor.figuraperf.core.Level;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
@@ -12,14 +10,16 @@ import net.minecraft.text.Text;
 import java.util.List;
 
 /**
- * The diagnostics panel: what the budget is doing right now, and which avatars are the expensive
- * ones – with scripts and geometry apart, because that split is what decides whether thinning the
- * work is enough or Figura's renderer itself is the problem.
+ * The diagnostics panel: what the mod is doing right now, and which avatars are the expensive ones,
+ * with scripts and geometry counted apart. Figura has no such reading of its own – it can tell you
+ * how complex an avatar is, but not how many milliseconds a frame that person is costing you.
  */
 public final class PerfHud {
 
 	private static final int MARGIN = 4;
 	private static final int LINE = 10;
+	/** How many of the hidden are named before the rest become a count. */
+	private static final int HIDDEN_NAMES = 6;
 
 	private PerfHud() {
 	}
@@ -38,20 +38,21 @@ public final class PerfHud {
 		int y = MARGIN + Math.max(0, config.overlayOffsetY);
 
 		String title = Text.translatable("figuraperf.hud.title").getString();
-		if (!config.enabled)
+		// Red when off, because a small grey "(off)" was easy to miss and cost an evening of
+		// measurements taken with the mod doing nothing.
+		int titleColour = 0xFF7FD4FF;
+		if (!config.enabled) {
 			title += " " + Text.translatable("figuraperf.hud.off").getString();
-		line(context, x, y, title, 0xFF7FD4FF);
+			titleColour = 0xFFFF6B6B;
+		}
+		line(context, x, y, title, titleColour);
 		y += LINE;
 
-		String profile = (config.profile == ProfileChoice.AUTO
-				? (AvatarBudget.crowded() ? ProfileChoice.CROWD : ProfileChoice.SOLO)
-				: config.profile).getDisplayName().getString();
-		line(context, x, y, Text.translatable("figuraperf.hud.fps", AvatarBudget.fps()).getString()
-				+ "  " + Text.translatable("figuraperf.hud.profile", profile).getString(), 0xFFCFCFCF);
+		line(context, x, y, Text.translatable("figuraperf.hud.fps", AvatarBudget.fps()).getString(), 0xFFCFCFCF);
 		y += LINE;
 
 		line(context, x, y, Text.translatable("figuraperf.hud.counts",
-				AvatarBudget.fullCount(), AvatarBudget.modelCount(), AvatarBudget.offCount()).getString()
+				AvatarBudget.shownCount(), AvatarBudget.hiddenCount()).getString()
 				+ "  " + Text.translatable("figuraperf.hud.budget", AvatarBudget.budget()).getString(), 0xFFCFCFCF);
 		y += LINE;
 
@@ -73,6 +74,24 @@ public final class PerfHud {
 			y += LINE;
 		}
 
+		// Who exactly is missing, so a hidden avatar is never a mystery.
+		List<String> hidden = AvatarBudget.hiddenNames();
+		if (!hidden.isEmpty()) {
+			int listed = Math.min(HIDDEN_NAMES, hidden.size());
+			StringBuilder names = new StringBuilder();
+			for (int i = 0; i < listed; i++) {
+				if (i > 0)
+					names.append(", ");
+				names.append(hidden.get(i));
+			}
+			if (hidden.size() > listed)
+				names.append(" +").append(hidden.size() - listed);
+
+			line(context, x, y, Text.translatable("figuraperf.hud.hidden_names", names.toString()).getString(),
+					0xFFB0A0C0);
+			y += LINE;
+		}
+
 		y += 2;
 		line(context, x, y, Text.translatable("figuraperf.hud.header").getString(), 0xFF8A8A8A);
 		y += LINE;
@@ -82,15 +101,9 @@ public final class PerfHud {
 			if (row.total() < 0.01)
 				continue;
 
-			// Said out loud, because these numbers are what the avatar costs after being cut down,
-			// not what it would cost left alone.
-			String marker = AvatarBudget.levelOf(row.owner()) == Level.FULL
-					? ""
-					: " " + Text.translatable("figuraperf.hud.level.model").getString();
-
-			String text = String.format("%5.2f  %4.2f/%4.2f  %4d  %s%s",
+			String text = String.format("%5.2f  %4.2f/%4.2f  %4d  %s",
 					row.total(), row.script(), row.render(), fpsCostOf(row.total()),
-					AvatarBudget.nameOf(row.owner()), marker);
+					AvatarBudget.nameOf(row.owner()));
 			line(context, x, y, text, colourFor(row.total()));
 			y += LINE;
 		}
@@ -101,9 +114,9 @@ public final class PerfHud {
 	 *
 	 * <p>A frame at the current rate lasts a known number of milliseconds; the avatars take a known
 	 * slice out of it. Take that slice away and the rest of the frame would finish sooner, which is
-	 * the frame rate the second number reports. It is an estimate, and honestly so: it only counts
-	 * time this mod can see, on the main thread, and assumes the graphics card is not the thing
-	 * holding the frame back. With a frame rate cap or a heavy shader pack the real gain is smaller.
+	 * the frame rate the second number reports. It only counts time this mod can see, on the main
+	 * thread, and assumes the graphics card is not the thing holding the frame back – with a frame
+	 * rate cap or a heavy shader pack the real gain is smaller.
 	 */
 	private static String costLine(double avatarMillis) {
 		int fps = AvatarBudget.fps();

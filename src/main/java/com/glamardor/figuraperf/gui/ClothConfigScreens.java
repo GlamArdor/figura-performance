@@ -1,8 +1,6 @@
 package com.glamardor.figuraperf.gui;
 
 import com.glamardor.figuraperf.config.PerfConfig;
-import com.glamardor.figuraperf.config.Profile;
-import com.glamardor.figuraperf.config.ProfileChoice;
 import com.glamardor.figuraperf.core.AvatarBudget;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
@@ -61,22 +59,10 @@ final class ClothConfigScreens {
 		general.addEntry(toggle(entries, "always_full_self", config.alwaysFullSelf, defaults.alwaysFullSelf,
 				value -> config.alwaysFullSelf = value));
 
-		var profileEntry = entries.startEnumSelector(text("profile"), ProfileChoice.class, config.profile)
-				.setDefaultValue(defaults.profile)
-				.setEnumNameProvider(value -> ((ProfileChoice) value).getDisplayName())
-				.setTooltip(tooltip("profile"))
-				.setSaveConsumer(value -> config.profile = value)
-				.build();
-		general.addEntry(profileEntry);
-		LIVE.add(() -> config.profile = profileEntry.getValue());
-
-		general.addEntry(count(entries, "crowd_players", config.crowdPlayers, defaults.crowdPlayers, 2, 40,
-				value -> config.crowdPlayers = value));
-		general.addEntry(blocks(entries, "crowd_radius", config.crowdRadius, defaults.crowdRadius, 8, 128,
-				value -> config.crowdRadius = value));
-
-		profileCategory(builder, entries, "solo", config.solo, defaults.solo);
-		profileCategory(builder, entries, "crowd", config.crowd, defaults.crowd);
+		general.addEntry(blocks(entries, "distance", config.distance, defaults.distance, 4, 256,
+				value -> config.distance = value));
+		general.addEntry(count(entries, "max_avatars", config.maxAvatars, defaults.maxAvatars, 0, 64,
+				value -> config.maxAvatars = value));
 
 		ConfigCategory frames = builder.getOrCreateCategory(Text.translatable("figuraperf.category.frames"));
 		frames.addEntry(toggle(entries, "skip_offscreen", config.skipOffscreen, defaults.skipOffscreen,
@@ -123,29 +109,6 @@ final class ClothConfigScreens {
 		Screen screen = builder.build();
 		LivePreview.start(screen, LIVE);
 		return screen;
-	}
-
-	/** The two profiles hold the same settings, so they are built from the same list. */
-	private static void profileCategory(ConfigBuilder builder, ConfigEntryBuilder entries, String name,
-			Profile profile, Profile defaults) {
-		ConfigCategory category = builder.getOrCreateCategory(Text.translatable("figuraperf.category." + name));
-
-		category.addEntry(blocks(entries, "full_distance", profile.fullDistance, defaults.fullDistance, 4, 128,
-				value -> profile.fullDistance = value));
-		category.addEntry(blocks(entries, "model_distance", profile.modelDistance, defaults.modelDistance, 8, 256,
-				value -> profile.modelDistance = value));
-		category.addEntry(count(entries, "max_full", profile.maxFullAvatars, defaults.maxFullAvatars, 0, 48,
-				value -> profile.maxFullAvatars = value));
-		category.addEntry(count(entries, "max_model", profile.maxModelAvatars, defaults.maxModelAvatars, 0, 64,
-				value -> profile.maxModelAvatars = value));
-		category.addEntry(count(entries, "animation_interval", profile.animationInterval, defaults.animationInterval,
-				1, 10, value -> profile.animationInterval = value));
-		category.addEntry(count(entries, "script_interval", profile.scriptTickInterval, defaults.scriptTickInterval,
-				1, 10, value -> profile.scriptTickInterval = value));
-		category.addEntry(toggle(entries, "complexity_lod", profile.complexityLod, defaults.complexityLod,
-				value -> profile.complexityLod = value));
-		category.addEntry(percent(entries, "complexity_floor", profile.complexityFloor, defaults.complexityFloor,
-				5, 100, value -> profile.complexityFloor = value));
 	}
 
 	// -- entry builders, each one also feeding the live preview --
