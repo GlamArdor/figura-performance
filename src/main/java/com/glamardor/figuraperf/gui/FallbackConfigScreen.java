@@ -227,6 +227,9 @@ public class FallbackConfigScreen extends Screen {
 			TextFieldWidget field = new TextFieldWidget(this.textRenderer, 0, 0, ROW_WIDTH, 20,
 					Text.translatable("figuraperf.option." + key));
 			field.setMaxLength(512);
+			// An empty list says nothing about how it should be filled in, so show the shape of it.
+			field.setPlaceholder(Text.translatable("figuraperf.option.names_example")
+					.formatted(Formatting.DARK_GRAY));
 			field.setText(current);
 			field.setChangedListener(value -> {
 				setter.accept(value);

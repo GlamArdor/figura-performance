@@ -37,9 +37,9 @@
 	"figuraperf.option.auto_block_announce.tooltip": "Prints a line naming the avatar that was switched off and what it cost.",
 	"figuraperf.option.auto_block_current": "Blocked automatically: %s",
 	"figuraperf.option.whitelist": "Always shown",
-	"figuraperf.option.whitelist.tooltip": "Names separated by commas. These avatars are always shown, whatever the distance and the limits say.",
+	"figuraperf.option.whitelist.tooltip": "Names separated by commas, for example: Glam_Ardor, Contik, WatzyCuh. Case does not matter. These avatars are always shown, whatever the distance and the limit say.",
 	"figuraperf.option.blocked_list": "Always hidden",
-	"figuraperf.option.blocked_list.tooltip": "Names separated by commas. Their avatars are never shown to you.",
+	"figuraperf.option.blocked_list.tooltip": "Names separated by commas, for example: Glam_Ardor, Contik, WatzyCuh. Case does not matter. Their avatars are never shown to you.",
 	"figuraperf.option.overlay": "Diagnostics overlay",
 	"figuraperf.option.overlay.tooltip": "Shows the frame rate, how many avatars are shown and hidden, and which of them cost the most, scripts and geometry apart.",
 	"figuraperf.option.overlay_rows": "Overlay rows",
@@ -71,5 +71,7 @@
 	"figuraperf.option.distance.tooltip": "Past this distance an avatar is not shown and the player falls back to their skin.",
 	"figuraperf.option.max_avatars": "Avatars at once",
 	"figuraperf.option.max_avatars.tooltip": "Only this many of the nearest avatars are shown, the rest are hidden.",
-	"figuraperf.hud.hidden_names": "hidden: %s"
+	"figuraperf.hud.hidden_names": "hidden: %s",
+	"figuraperf.option.names_example": "Glam_Ardor, Contik, WatzyCuh",
+	"figuraperf.option.names_hint": "Names separated by commas, case does not matter. For example: %s"
 }

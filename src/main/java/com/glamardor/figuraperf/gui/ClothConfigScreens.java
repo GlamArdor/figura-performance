@@ -95,6 +95,9 @@ final class ClothConfigScreens {
 				String.join(", ", AvatarBudget.autoBlockedNames()))).build());
 
 		ConfigCategory lists = builder.getOrCreateCategory(Text.translatable("figuraperf.category.lists"));
+		// An empty field says nothing about how it should be filled in, so spell it out once.
+		lists.addEntry(entries.startTextDescription(Text.translatable("figuraperf.option.names_hint",
+				Text.translatable("figuraperf.option.names_example"))).build());
 		lists.addEntry(names(entries, "whitelist", config.whitelist, value -> config.whitelist = value));
 		lists.addEntry(names(entries, "blocked_list", config.blocked, value -> config.blocked = value));
 

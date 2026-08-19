@@ -6,6 +6,8 @@ of them stops eating your frame rate.
 Nothing is needed on the server side, and other players do not need the mod. It only changes what
 **your** client spends time on; how your own avatar looks to everyone else is untouched.
 
+![The overlay in a crowd](screenshots/overlay.png)
+
 ## What it is for
 
 Figura already lets you block an individual player, or trust only your friends. What it cannot do is

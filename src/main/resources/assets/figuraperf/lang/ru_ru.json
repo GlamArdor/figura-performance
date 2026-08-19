@@ -37,9 +37,9 @@
 	"figuraperf.option.auto_block_announce.tooltip": "Пишет строку с именем выключенного аватара и его стоимостью.",
 	"figuraperf.option.auto_block_current": "Автоматически выключены: %s",
 	"figuraperf.option.whitelist": "Всегда показывать",
-	"figuraperf.option.whitelist.tooltip": "Ники через запятую. Эти аватары показываются всегда, что бы ни говорили дистанции и лимиты.",
+	"figuraperf.option.whitelist.tooltip": "Ники через запятую, например: Glam_Ardor, Contik, WatzyCuh. Регистр не важен. Эти аватары показываются всегда, что бы ни говорили дистанция и лимит.",
 	"figuraperf.option.blocked_list": "Всегда скрывать",
-	"figuraperf.option.blocked_list.tooltip": "Ники через запятую. Их аватары у тебя не показываются никогда.",
+	"figuraperf.option.blocked_list.tooltip": "Ники через запятую, например: Glam_Ardor, Contik, WatzyCuh. Регистр не важен. Их аватары у тебя не показываются никогда.",
 	"figuraperf.option.overlay": "Оверлей диагностики",
 	"figuraperf.option.overlay.tooltip": "Показывает фпс, сколько аватаров показано и скрыто, и кто из них дороже всего – отдельно скрипты, отдельно геометрия.",
 	"figuraperf.option.overlay_rows": "Строк в оверлее",
@@ -71,5 +71,7 @@
 	"figuraperf.option.distance.tooltip": "Дальше этой дистанции аватар не показывается, игрок выглядит обычным скином.",
 	"figuraperf.option.max_avatars": "Аватаров одновременно",
 	"figuraperf.option.max_avatars.tooltip": "Показываются только столько ближайших аватаров, остальные скрыты.",
-	"figuraperf.hud.hidden_names": "скрыты: %s"
+	"figuraperf.hud.hidden_names": "скрыты: %s",
+	"figuraperf.option.names_example": "Glam_Ardor, Contik, WatzyCuh",
+	"figuraperf.option.names_hint": "Ники через запятую, регистр не важен. Например: %s"
 }
