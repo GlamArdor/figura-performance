@@ -8,3 +8,6 @@ run/
 
 # Figura is not ours to redistribute: fetch it yourself, see the README
 libs/
+
+# the Discord announcement, not part of the mod
+discord-post.txt
