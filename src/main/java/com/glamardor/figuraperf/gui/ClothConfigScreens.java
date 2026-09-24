@@ -102,6 +102,8 @@ final class ClothConfigScreens {
 		lists.addEntry(names(entries, "blocked_list", config.blocked, value -> config.blocked = value));
 
 		ConfigCategory overlay = builder.getOrCreateCategory(Text.translatable("figuraperf.category.overlay"));
+		overlay.addEntry(toggle(entries, "debug_screen", config.debugScreen, defaults.debugScreen,
+				value -> config.debugScreen = value));
 		overlay.addEntry(toggle(entries, "overlay", config.overlay, defaults.overlay,
 				value -> config.overlay = value));
 		overlay.addEntry(count(entries, "overlay_rows", config.overlayRows, defaults.overlayRows, 1, 20,

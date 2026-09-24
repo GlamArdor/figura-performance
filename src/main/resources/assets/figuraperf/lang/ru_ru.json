@@ -73,5 +73,7 @@
 	"figuraperf.option.max_avatars.tooltip": "Показываются только столько ближайших аватаров, остальные скрыты.",
 	"figuraperf.hud.hidden_names": "скрыты: %s",
 	"figuraperf.option.names_example": "Glam_Ardor, Contik, WatzyCuh",
-	"figuraperf.option.names_hint": "Ники через запятую, регистр не важен. Например: %s"
+	"figuraperf.option.names_hint": "Ники через запятую, регистр не важен. Например: %s",
+	"figuraperf.option.debug_screen": "Показывать в F3",
+	"figuraperf.option.debug_screen.tooltip": "Дописывает статистику мода в отладочный экран F3: сколько показано и скрыто, кто скрыт и во что обходятся аватары."
 }

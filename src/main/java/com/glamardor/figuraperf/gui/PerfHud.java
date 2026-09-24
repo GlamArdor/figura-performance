@@ -7,6 +7,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ public final class PerfHud {
 	private static final int MARGIN = 4;
 	private static final int LINE = 10;
 	/** How many of the hidden are named before the rest become a count. */
-	private static final int HIDDEN_NAMES = 6;
+	private static final int HIDDEN_NAMES = 4;
 
 	private PerfHud() {
 	}
@@ -33,46 +34,46 @@ public final class PerfHud {
 		if (client.options.hudHidden || client.player == null)
 			return;
 
-		int x = MARGIN;
-		// Started below whatever the frame counter of another mod has already drawn up there.
 		int y = MARGIN + Math.max(0, config.overlayOffsetY);
+		for (String line : lines()) {
+			context.drawTextWithShadow(client.textRenderer, line, MARGIN, y, 0xFFFFFFFF);
+			y += LINE;
+		}
+	}
 
-		String title = Text.translatable("figuraperf.hud.title").getString();
+	/**
+	 * The panel as plain lines, colours included as formatting codes.
+	 *
+	 * <p>Shared with the debug screen: the same reading is worth having behind F3, where it costs
+	 * nothing to keep around and appears exactly when someone goes looking for numbers.
+	 */
+	public static List<String> lines() {
+		PerfConfig config = PerfConfig.get();
+		List<String> lines = new ArrayList<>();
+
 		// Red when off, because a small grey "(off)" was easy to miss and cost an evening of
 		// measurements taken with the mod doing nothing.
-		int titleColour = 0xFF7FD4FF;
-		if (!config.enabled) {
-			title += " " + Text.translatable("figuraperf.hud.off").getString();
-			titleColour = 0xFFFF6B6B;
-		}
-		line(context, x, y, title, titleColour);
-		y += LINE;
+		lines.add((config.enabled ? "§b" : "§c") + Text.translatable("figuraperf.hud.title").getString()
+				+ (config.enabled ? "" : " " + Text.translatable("figuraperf.hud.off").getString()));
 
-		line(context, x, y, Text.translatable("figuraperf.hud.fps", AvatarBudget.fps()).getString(), 0xFFCFCFCF);
-		y += LINE;
+		lines.add("§f" + Text.translatable("figuraperf.hud.fps", AvatarBudget.fps()).getString());
 
-		line(context, x, y, Text.translatable("figuraperf.hud.counts",
+		lines.add("§f" + Text.translatable("figuraperf.hud.counts",
 				AvatarBudget.shownCount(), AvatarBudget.hiddenCount()).getString()
-				+ "  " + Text.translatable("figuraperf.hud.budget", AvatarBudget.budget()).getString(), 0xFFCFCFCF);
-		y += LINE;
+				+ "  " + Text.translatable("figuraperf.hud.budget", AvatarBudget.budget()).getString());
 
 		double scripts = CostMeter.totalScriptMillis();
 		double render = CostMeter.totalRenderMillis();
 		double avatars = scripts + render;
-		line(context, x, y, Text.translatable("figuraperf.hud.total",
+		lines.add("§f" + Text.translatable("figuraperf.hud.total",
 				String.format("%.2f", avatars),
 				String.format("%.2f", scripts),
-				String.format("%.2f", render)).getString(), 0xFFCFCFCF);
-		y += LINE;
+				String.format("%.2f", render)).getString());
 
-		line(context, x, y, costLine(avatars), 0xFFFFD166);
-		y += LINE;
+		lines.add("§e" + costLine(avatars));
 
-		if (AvatarBudget.autoBlockedCount() > 0) {
-			line(context, x, y, Text.translatable("figuraperf.hud.autoblocked",
-					AvatarBudget.autoBlockedCount()).getString(), 0xFFFFA0A0);
-			y += LINE;
-		}
+		if (AvatarBudget.autoBlockedCount() > 0)
+			lines.add("§c" + Text.translatable("figuraperf.hud.autoblocked", AvatarBudget.autoBlockedCount()).getString());
 
 		// Who exactly is missing, so a hidden avatar is never a mystery.
 		List<String> hidden = AvatarBudget.hiddenNames();
@@ -87,26 +88,21 @@ public final class PerfHud {
 			if (hidden.size() > listed)
 				names.append(" +").append(hidden.size() - listed);
 
-			line(context, x, y, Text.translatable("figuraperf.hud.hidden_names", names.toString()).getString(),
-					0xFFB0A0C0);
-			y += LINE;
+			lines.add("§7" + Text.translatable("figuraperf.hud.hidden_names", names.toString()).getString());
 		}
 
-		y += 2;
-		line(context, x, y, Text.translatable("figuraperf.hud.header").getString(), 0xFF8A8A8A);
-		y += LINE;
+		lines.add("§7" + Text.translatable("figuraperf.hud.header").getString());
 
-		List<CostMeter.Row> rows = CostMeter.top(Math.max(1, config.overlayRows));
-		for (CostMeter.Row row : rows) {
+		for (CostMeter.Row row : CostMeter.top(Math.max(1, config.overlayRows))) {
 			if (row.total() < 0.01)
 				continue;
 
-			String text = String.format("%5.2f  %4.2f/%4.2f  %4d  %s",
+			lines.add(colourFor(row.total()) + String.format("%5.2f  %4.2f/%4.2f  %4d  %s",
 					row.total(), row.script(), row.render(), fpsCostOf(row.total()),
-					AvatarBudget.nameOf(row.owner()));
-			line(context, x, y, text, colourFor(row.total()));
-			y += LINE;
+					AvatarBudget.nameOf(row.owner())));
 		}
+
+		return lines;
 	}
 
 	/**
@@ -144,16 +140,11 @@ public final class PerfHud {
 	}
 
 	/** Green while an avatar is cheap, amber when it starts to matter, red when it is the problem. */
-	private static int colourFor(double millis) {
+	private static String colourFor(double millis) {
 		if (millis >= 2.0)
-			return 0xFFFF6B6B;
+			return "§c";
 		if (millis >= 0.5)
-			return 0xFFFFD166;
-		return 0xFF9BE29B;
-	}
-
-	private static void line(DrawContext context, int x, int y, String text, int colour) {
-		MinecraftClient client = MinecraftClient.getInstance();
-		context.drawTextWithShadow(client.textRenderer, text, x, y, colour);
+			return "§6";
+		return "§a";
 	}
 }

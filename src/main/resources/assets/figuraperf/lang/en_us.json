@@ -73,5 +73,7 @@
 	"figuraperf.option.max_avatars.tooltip": "Only this many of the nearest avatars are shown, the rest are hidden.",
 	"figuraperf.hud.hidden_names": "hidden: %s",
 	"figuraperf.option.names_example": "Glam_Ardor, Contik, WatzyCuh",
-	"figuraperf.option.names_hint": "Names separated by commas, case does not matter. For example: %s"
+	"figuraperf.option.names_hint": "Names separated by commas, case does not matter. For example: %s",
+	"figuraperf.option.debug_screen": "Show in F3",
+	"figuraperf.option.debug_screen.tooltip": "Adds the mod's readout to the F3 debug screen: how many avatars are shown and hidden, who is hidden, and what they cost."
 }

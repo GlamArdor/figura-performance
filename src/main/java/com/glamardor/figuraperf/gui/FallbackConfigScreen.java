@@ -121,6 +121,7 @@ public class FallbackConfigScreen extends Screen {
 						value -> config.blocked = ClothConfigScreens.splitNames(value)));
 
 		category("overlay",
+				toggle("debug_screen", () -> config.debugScreen, value -> config.debugScreen = value),
 				toggle("overlay", () -> config.overlay, value -> config.overlay = value),
 				intSlider("overlay_rows", config.overlayRows, 1, 20, value -> config.overlayRows = value),
 				intSlider("overlay_offset", config.overlayOffsetY, 0, 200, value -> config.overlayOffsetY = value));

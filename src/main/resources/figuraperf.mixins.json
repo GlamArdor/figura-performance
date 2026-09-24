@@ -6,6 +6,7 @@
 		"AvatarManagerMixin",
 		"AvatarMixin",
 		"AvatarRendererAccessor",
+		"DebugHudMixin",
 		"FiguraTextureMixin",
 		"ImmediateAvatarRendererMixin",
 		"InGameHudMixin",

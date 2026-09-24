@@ -73,6 +73,9 @@ public class PerfConfig {
 
 	// -- diagnostics --
 
+	/** The panel behind F3, where numbers are looked for anyway. On by default; the standalone
+	 * overlay below is for watching it without the rest of the debug screen in the way. */
+	public boolean debugScreen = true;
 	public boolean overlay = false;
 	public int overlayRows = 8;
 	/** Pushed down by two lines out of the box, so it clears the frame counter Sodium draws. */
@@ -159,6 +162,7 @@ public class PerfConfig {
 		autoBlockMillis = defaults.autoBlockMillis;
 		autoBlockAnnounce = defaults.autoBlockAnnounce;
 
+		debugScreen = defaults.debugScreen;
 		overlay = defaults.overlay;
 		overlayRows = defaults.overlayRows;
 		overlayOffsetY = defaults.overlayOffsetY;
