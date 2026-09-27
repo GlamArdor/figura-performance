@@ -1,5 +1,6 @@
 package com.glamardor.figuraperf.gui;
 
+import com.glamardor.figuraperf.FiguraPerf;
 import com.glamardor.figuraperf.config.PerfConfig;
 import com.glamardor.figuraperf.core.CostMeter;
 import net.minecraft.client.MinecraftClient;
@@ -92,7 +93,8 @@ public class FallbackConfigScreen extends Screen {
 				toggle("enabled", () -> config.enabled, value -> config.enabled = value),
 				toggle("always_full_self", () -> config.alwaysFullSelf, value -> config.alwaysFullSelf = value),
 				blocksSlider("distance", config.distance, 4, 256, value -> config.distance = value),
-				intSlider("max_avatars", config.maxAvatars, 0, 64, value -> config.maxAvatars = value));
+				intSlider("max_avatars", config.maxAvatars, 0, 64, value -> config.maxAvatars = value),
+				action("reload_all", () -> FiguraPerf.reloadAll(MinecraftClient.getInstance())));
 
 		category("frames",
 				toggle("skip_offscreen", () -> config.skipOffscreen, value -> config.skipOffscreen = value),
@@ -182,6 +184,15 @@ public class FallbackConfigScreen extends Screen {
 				config.save();
 				b.setMessage(label(key, value.get()));
 			}).dimensions(0, 0, ROW_WIDTH, 20).build();
+			button.setTooltip(Tooltip.of(Text.translatable("figuraperf.option." + key + ".tooltip")));
+			return button;
+		});
+	}
+
+	private Option action(String key, Runnable onClick) {
+		return new Option(key, () -> {
+			ButtonWidget button = ButtonWidget.builder(Text.translatable("figuraperf.option." + key + ".button"),
+					b -> onClick.run()).dimensions(0, 0, ROW_WIDTH, 20).build();
 			button.setTooltip(Tooltip.of(Text.translatable("figuraperf.option." + key + ".tooltip")));
 			return button;
 		});

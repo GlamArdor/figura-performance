@@ -2,6 +2,7 @@ package com.glamardor.figuraperf;
 
 import com.glamardor.figuraperf.config.PerfConfig;
 import com.glamardor.figuraperf.core.AvatarBudget;
+import com.glamardor.figuraperf.core.AvatarReloader;
 import com.glamardor.figuraperf.core.CostMeter;
 import com.glamardor.figuraperf.gui.LivePreview;
 import net.fabricmc.api.ClientModInitializer;
@@ -26,6 +27,8 @@ public class FiguraPerf implements ClientModInitializer {
 	private static KeyBinding toggleKey;
 	private static KeyBinding overlayKey;
 	private static KeyBinding blockKey;
+	private static KeyBinding reloadAllKey;
+	private static KeyBinding reloadKey;
 
 	@Override
 	public void onInitializeClient() {
@@ -34,6 +37,8 @@ public class FiguraPerf implements ClientModInitializer {
 		toggleKey = register("toggle", GLFW.GLFW_KEY_UNKNOWN);
 		overlayKey = register("overlay", GLFW.GLFW_KEY_UNKNOWN);
 		blockKey = register("block", GLFW.GLFW_KEY_UNKNOWN);
+		reloadAllKey = register("reload_all", GLFW.GLFW_KEY_UNKNOWN);
+		reloadKey = register("reload", GLFW.GLFW_KEY_UNKNOWN);
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			handleKeys(client);
@@ -67,15 +72,55 @@ public class FiguraPerf implements ClientModInitializer {
 
 		while (blockKey.wasPressed())
 			toggleBlockOfLookedAtPlayer(client, config);
+
+		while (reloadAllKey.wasPressed())
+			reloadAll(client);
+
+		while (reloadKey.wasPressed())
+			reloadLookedAtPlayer(client);
+	}
+
+	public static void reloadAll(MinecraftClient client) {
+		int count = AvatarReloader.reloadAll();
+		say(client, Text.translatable("figuraperf.message.reloaded_all", count));
+	}
+
+	private static void reloadLookedAtPlayer(MinecraftClient client) {
+		AbstractClientPlayerEntity target = lookedAtPlayer(client);
+		if (target == null) {
+			say(client, Text.translatable("figuraperf.message.nobody").formatted(Formatting.GRAY));
+			return;
+		}
+
+		AvatarReloader.reload(target.getUuid());
+		say(client, Text.translatable("figuraperf.message.reloaded", target.getName().getString()));
+	}
+
+	private static void toggleBlockOfLookedAtPlayer(MinecraftClient client, PerfConfig config) {
+		AbstractClientPlayerEntity best = lookedAtPlayer(client);
+		if (best == null) {
+			say(client, Text.translatable("figuraperf.message.nobody").formatted(Formatting.GRAY));
+			return;
+		}
+
+		String name = best.getName().getString();
+		boolean removed = config.blocked.removeIf(entry -> entry.equalsIgnoreCase(name));
+		if (!removed)
+			config.blocked.add(name);
+		config.save();
+
+		say(client, Text.translatable(removed
+				? "figuraperf.message.unblocked"
+				: "figuraperf.message.blocked", name));
 	}
 
 	/**
-	 * Blocks or unblocks whoever the player is looking at. Not using the crosshair target: that only
-	 * reaches a few blocks, and the avatar worth turning off is usually the one across the square.
+	 * Whoever the player is looking at. Not using the crosshair target: that only reaches a few
+	 * blocks, and the avatar worth turning off is usually the one across the square.
 	 */
-	private static void toggleBlockOfLookedAtPlayer(MinecraftClient client, PerfConfig config) {
+	private static AbstractClientPlayerEntity lookedAtPlayer(MinecraftClient client) {
 		if (client.world == null || client.player == null)
-			return;
+			return null;
 
 		Vec3d eyes = client.player.getEyePos();
 		Vec3d look = client.player.getRotationVec(1f);
@@ -98,21 +143,7 @@ public class FiguraPerf implements ClientModInitializer {
 				best = player;
 			}
 		}
-
-		if (best == null) {
-			say(client, Text.translatable("figuraperf.message.nobody").formatted(Formatting.GRAY));
-			return;
-		}
-
-		String name = best.getName().getString();
-		boolean removed = config.blocked.removeIf(entry -> entry.equalsIgnoreCase(name));
-		if (!removed)
-			config.blocked.add(name);
-		config.save();
-
-		say(client, Text.translatable(removed
-				? "figuraperf.message.unblocked"
-				: "figuraperf.message.blocked", name));
+		return best;
 	}
 
 	private static void say(MinecraftClient client, Text text) {

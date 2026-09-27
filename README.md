@@ -40,8 +40,9 @@ avatars took a client from 100 frames to 135, where panic gave 143.
 One count covers every situation: with two people around, a limit of twelve hides nobody, and it
 only starts cutting once there is something to cut.
 
-**Off screen.** Avatars behind you are hidden, and their scripts stop with them. Turn around and
-they are back within a tick.
+**Off screen.** Avatars behind you are hidden, and their per tick and per frame scripts stop with
+them. Turn around and they are back within a tick. One-off events such as the avatar's setup when
+its player first appears always go through, so an avatar that loaded out of sight still works.
 
 **Adaptive mode.** The mod watches the frame rate and shows fewer avatars when it falls below the
 target, more once it recovers.
@@ -63,6 +64,14 @@ what the avatars cost in milliseconds and in frames, and a list of the most expe
 with scripts and geometry counted separately. Figura can tell you how complex an avatar is; it
 cannot tell you how many frames that person is costing you.
 
+**Reloading avatars.** A button in the settings and a key reload every avatar at once, another key
+reloads the one you are looking at – the same as Figura's own popup menu entry, without the popup.
+
+**Broken avatars.** Figura 0.1.5 throws old avatars away on whatever thread the news arrived on:
+the websocket when someone swaps their avatar, the HTTP pool when their data comes back. Off the
+render thread closing the textures fails halfway, and the avatar is left without them until
+reloaded by hand. The mod moves that cleanup to the render thread.
+
 Your own avatar is never hidden by default.
 
 ## Keys
@@ -72,6 +81,8 @@ Nothing is bound out of the box. In the controls screen, under Figura Performanc
 - turn the mod on or off
 - toggle the diagnostics overlay
 - hide the avatar you are looking at
+- reload all avatars
+- reload the avatar you are looking at
 
 ## Settings
 

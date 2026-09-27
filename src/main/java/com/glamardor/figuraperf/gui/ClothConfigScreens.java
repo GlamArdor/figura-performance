@@ -1,5 +1,6 @@
 package com.glamardor.figuraperf.gui;
 
+import com.glamardor.figuraperf.FiguraPerf;
 import com.glamardor.figuraperf.config.PerfConfig;
 import com.glamardor.figuraperf.core.AvatarBudget;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
@@ -7,6 +8,7 @@ import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.gui.entries.IntegerSliderEntry;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
@@ -63,6 +65,8 @@ final class ClothConfigScreens {
 				value -> config.distance = value));
 		general.addEntry(count(entries, "max_avatars", config.maxAvatars, defaults.maxAvatars, 0, 64,
 				value -> config.maxAvatars = value));
+		general.addEntry(new ClothButtonEntry(text("reload_all"), Text.translatable("figuraperf.option.reload_all.button"),
+				tooltip("reload_all")[0], () -> FiguraPerf.reloadAll(MinecraftClient.getInstance())));
 
 		ConfigCategory frames = builder.getOrCreateCategory(Text.translatable("figuraperf.category.frames"));
 		frames.addEntry(toggle(entries, "skip_offscreen", config.skipOffscreen, defaults.skipOffscreen,

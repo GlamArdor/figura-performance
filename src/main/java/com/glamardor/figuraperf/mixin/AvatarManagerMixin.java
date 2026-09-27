@@ -2,12 +2,16 @@ package com.glamardor.figuraperf.mixin;
 
 import com.glamardor.figuraperf.core.AvatarBudget;
 
+import net.minecraft.client.MinecraftClient;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.UUID;
 
 /**
  * Makes a switched off avatar invisible to the rest of Figura, the way its panic button does.
@@ -27,5 +31,20 @@ public abstract class AvatarManagerMixin {
 
 		if (avatar != null && AvatarBudget.isHidden(avatar))
 			cir.setReturnValue(null);
+	}
+
+	/**
+	 * When someone swaps their avatar, the backend says so over the websocket and Figura reloads it
+	 * right there on the socket's reading thread. The texture side of that is handled in
+	 * {@link UserDataMixin}; this moves the rest, the local avatar reload included, to the render
+	 * thread where it belongs.
+	 */
+	@Inject(method = "reloadAvatar", at = @At("HEAD"), cancellable = true)
+	private static void figuraperf$reloadOnRenderThread(UUID id, CallbackInfo ci) {
+		MinecraftClient client = MinecraftClient.getInstance();
+		if (!client.isOnThread()) {
+			client.execute(() -> AvatarManager.reloadAvatar(id));
+			ci.cancel();
+		}
 	}
 }

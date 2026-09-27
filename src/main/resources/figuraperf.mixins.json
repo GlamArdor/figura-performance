@@ -3,6 +3,7 @@
 	"package": "com.glamardor.figuraperf.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
+		"AvatarManagerAccessor",
 		"AvatarManagerMixin",
 		"AvatarMixin",
 		"AvatarRendererAccessor",
@@ -11,7 +12,8 @@
 		"ImmediateAvatarRendererMixin",
 		"InGameHudMixin",
 		"MinecraftClientMixin",
-		"ScreenMixin"
+		"ScreenMixin",
+		"UserDataMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
